@@ -1,0 +1,44 @@
+version: "3.7"
+services:
+  db:
+    image: "mysql:5.7"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456789
+      - MYSQL_DATABASE=joke-db
+      - MYSQL_USER=joke-user
+      - MYSQL_PASSWORD=123456789
+    ports:
+      - "3306:3306"
+    volumes:
+      - my-datavolume:/var/lib/mysql
+
+  backend:
+    working_dir: /var/app/backend
+    image: node:15
+    environment:
+      - MYSQL_DATABASE=joke-db
+      - MYSQL_USER=joke-user
+      - MYSQL_PASSWORD=123456789
+      - DBHOST=db
+      - DBPORT=3306
+    ports:
+      - 4000:4000
+    command: npm start
+    volumes:
+      - ./backend:/var/app/backend
+
+  frontend:
+    working_dir: /var/app/frontend
+    image: node:15
+    ports:
+      - 3000:3000
+    command: npm start
+    volumes:
+      - ./frontend:/var/app/frontend
+
+volumes:
+  my-datavolume:
